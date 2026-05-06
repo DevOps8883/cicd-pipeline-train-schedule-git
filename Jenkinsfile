@@ -1,6 +1,7 @@
 pipeline {
     agent any
     environment {
+        // Using env.BUILD_NUMBER to keep every version unique
         DOCKER_IMAGE = "davidadeleke23/train-schedule:${env.BUILD_NUMBER}"
     }
     stages {
@@ -15,23 +16,24 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh 'docker login -u ${USER} -p ${PASS}'
-            // This will try the push up to 3 times if it fails with an EOF error
-            retry(3) {
-                    sh 'docker push davidadeleke23/train-schedule:4'
-                  }
-               }
+                    retry(3) {
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
-                // Use the Kubernetes CLI plugin helper
-                  withKubeConfig([credentialsId: 'kubeconfig-file']) {
-               sh "sed -i 's|davidadeleke23/train-schedule:latest|davidadeleke23/train-schedule:5|g' deployment.yaml"
-               sh 'kubectl apply -f deployment.yaml'
-              }
-           }
-       }
+                // Switched to 'file' credential because your KubeConfig plugin is broken
+                withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
+                    script {
+                        // Dynamically updates the image tag to match the current build number
+                        sh "sed -i 's|image:.*|image: ${DOCKER_IMAGE}|g' deployment.yaml"
+                        // Uses the --kubeconfig flag to bypass the plugin requirement
+                        sh 'kubectl --kubeconfig=${KUBECONFIG} apply -f deployment.yaml'
+                    }
+                }
+            }
+        }
     }
-  }
 }
-    
