@@ -28,7 +28,10 @@ pipeline {
                   withKubeConfig([credentialsId: 'kubeconfig-file']) {
                sh "sed -i 's|davidadeleke23/train-schedule:latest|davidadeleke23/train-schedule:5|g' deployment.yaml"
                sh 'kubectl apply -f deployment.yaml'
-            }
-        }
+              }
+           }
+       }
     }
+  }
 }
+    
