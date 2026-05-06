@@ -24,9 +24,10 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                // Since you have kubectl installed locally, Jenkins can use the local context
-                sh "sed -i 's|davidadeleke23/train-schedule:latest|${DOCKER_IMAGE}|g' deployment.yaml"
-                sh "kubectl apply -f deployment.yaml"
+                // Use the Kubernetes CLI plugin helper
+                  withKubeConfig([credentialsId: 'kubeconfig-file']) {
+               sh "sed -i 's|davidadeleke23/train-schedule:latest|davidadeleke23/train-schedule:5|g' deployment.yaml"
+               sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
