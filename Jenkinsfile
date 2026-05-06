@@ -15,8 +15,11 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh 'docker login -u ${USER} -p ${PASS}'
-                    sh "docker push ${DOCKER_IMAGE}"
-                }
+            // This will try the push up to 3 times if it fails with an EOF error
+            retry(3) {
+                    sh 'docker push davidadeleke23/train-schedule:4'
+                  }
+               }
             }
         }
         stage('Deploy to Kubernetes') {
