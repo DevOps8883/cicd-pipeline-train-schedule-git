@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Keeps every build version unique in Docker Hub
+        // Tagging each image with the build number (e.g., train-schedule:10)
         DOCKER_IMAGE = "davidadeleke23/train-schedule:${env.BUILD_NUMBER}"
     }
 
@@ -19,7 +19,6 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh 'docker login -u ${USER} -p ${PASS}'
-                    // Retry handles temporary 'EOF' or network glitches
                     retry(3) {
                         sh "docker push ${DOCKER_IMAGE}"
                     }
@@ -29,14 +28,18 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                // Using 'file' type credential to handle the kubeconfig manually
                 withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBE_PATH')]) {
                     script {
-                        // Dynamically updates the deployment.yaml with the new build tag
+                        // Update the deployment file with the new image tag
                         sh "sed -i 's|image:.*|image: ${DOCKER_IMAGE}|g' deployment.yaml"
                         
-                        // --validate=false prevents kubectl from redirected to Jenkins during the OpenAPI check
-                        sh "kubectl --kubeconfig=\$KUBE_PATH apply -f deployment.yaml --validate=false"
+                        // Fix: Unset proxy variables to prevent the Jenkins redirect error
+                        sh """
+                            export http_proxy=
+                            export https_proxy=
+                            export no_proxy=
+                            kubectl --kubeconfig=\$KUBE_PATH apply -f deployment.yaml --validate=false
+                        """
                     }
                 }
             }
