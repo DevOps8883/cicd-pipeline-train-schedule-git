@@ -22,8 +22,17 @@ The application was listening on port 3000, but the manifests were configured fo
 100% (Build #14 successfully pushed and deployed).
 Deployment Success: 100% (Pods are healthy and running across multiple replicas).
 Accessibility: Successfully accessed the UI via multiple ports (7070 and 7777) using kubectl port-forward.
-# mportance of the Project:
+# Importance of the Project:
 This project demonstrates the core principles of DevOps. 
 By automating these steps, you reduce human error, speed up the release cycle, and ensure that the application environment is consistent from development to production. 
 Being able to troubleshoot the complex "handshakes" between Jenkins, Docker, and Kubernetes is a critical skill for any DevOps Engineer.
 <img width="958" height="472" alt="5" src="https://github.com/user-attachments/assets/3403f3cd-fb66-4ff2-962e-0f6fdf440366" />
+
+<img width="371" height="107" alt="1" src="https://github.com/user-attachments/assets/7e97e9d4-b571-405f-916d-e844a60e9b5d" />
+
+<img width="470" height="89" alt="2" src="https://github.com/user-attachments/assets/69533d28-9aa0-4c4b-b74c-0489ed8ac832" />
+
+<img width="950" height="454" alt="3" src="https://github.com/user-attachments/assets/23bb3e13-410b-4861-bb7b-1be9e9c1601f" />
+
+<img width="950" height="440" alt="4" src="https://github.com/user-attachments/assets/a9dfebbe-05b6-4314-95ec-f5e8bc5b4c1a" />
+
