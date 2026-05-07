@@ -28,7 +28,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBE_PATH')]) {
+                withCredentials([file(credentialsId: 'kubernetes-config', variable: 'KUBE_PATH')]) {
                     script {
                         // Update the deployment file with the new image tag
                         sh "sed -i 's|image:.*|image: ${DOCKER_IMAGE}|g' deployment.yaml"
