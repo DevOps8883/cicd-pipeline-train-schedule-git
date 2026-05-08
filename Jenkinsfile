@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Tagging each image with the build number (e.g., train-schedule:10)
         DOCKER_IMAGE = "davidadeleke23/train-schedule:${env.BUILD_NUMBER}"
     }
 
@@ -18,7 +17,8 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh 'docker login -u ${USER} -p ${PASS}'
+                    // Correction: Using --password-stdin to resolve EOF and security warnings
+                    sh 'echo "${PASS}" | docker login -u ${USER} --password-stdin'
                     retry(3) {
                         sh "docker push ${DOCKER_IMAGE}"
                     }
@@ -30,10 +30,8 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'kubernetes-config', variable: 'KUBE_PATH')]) {
                     script {
-                        // Update the deployment file with the new image tag
                         sh "sed -i 's|image:.*|image: ${DOCKER_IMAGE}|g' deployment.yaml"
                         
-                        // Fix: Unset proxy variables to prevent the Jenkins redirect error
                         sh """
                             export http_proxy=
                             export https_proxy=
