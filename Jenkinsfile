@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        // Tagging image with build number for unique versioning
         DOCKER_IMAGE = "davidadeleke23/train-schedule:${env.BUILD_NUMBER}"
     }
 
@@ -17,10 +18,12 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    // Correction: Using --password-stdin to resolve EOF and security warnings
-                    sh 'echo "${PASS}" | docker login -u ${USER} --password-stdin'
-                    retry(3) {
-                        sh "docker push ${DOCKER_IMAGE}"
+                    script {
+                        // Retry block handles intermittent EOF handshake failures
+                        retry(5) {
+                            sh 'echo "${PASS}" | docker login -u ${USER} --password-stdin'
+                            sh "docker push ${DOCKER_IMAGE}"
+                        }
                     }
                 }
             }
@@ -30,8 +33,11 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'kubernetes-config', variable: 'KUBE_PATH')]) {
                     script {
+                        // Update manifest with new image version
+                        // Note: Using g flag to ensure all instances are updated
                         sh "sed -i 's|image:.*|image: ${DOCKER_IMAGE}|g' deployment.yaml"
                         
+                        // Clear proxies to ensure kubectl can reach the local Minikube IP
                         sh """
                             export http_proxy=
                             export https_proxy=
