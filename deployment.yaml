@@ -3,7 +3,7 @@ kind: StatefulSet     # I changed Deployment StatefulSet so that pods can have u
 metadata:
   name: train-schedule
 spec:
-  ServiceName: 'TSS-App' # ServiceName is required for Statefulset. TSS is means 'train-sechedule-service'
+  ServiceName: 'train-schedule-service' # ServiceName is required for Statefulset. TSS is means 'train-sechedule-service'
   replicas: 2
   selector:
     matchLabels:
