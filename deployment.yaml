@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet     # I changed Deployment StatefulSet so that pods can have unique names as given by 'ServiceName', retain the names when there is a crash or deletion
 metadata:
   name: train-schedule
 spec:
+  ServiceName: 'TSS-App' # ServiceName is required for Statefulset. TSS is means 'train-sechedule-service'
   replicas: 2
   selector:
     matchLabels:
