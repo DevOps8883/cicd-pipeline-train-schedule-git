@@ -36,3 +36,22 @@ Being able to troubleshoot the complex "handshakes" between Jenkins, Docker, and
 
 <img width="950" height="440" alt="4" src="https://github.com/user-attachments/assets/a9dfebbe-05b6-4314-95ec-f5e8bc5b4c1a" />
 
+# SUPPORTING STATEMENT
+# (Situation):
+I led a project to automate the CI/CD lifecycle for a Node.js "Train Schedule" application to eliminate manual deployment errors and accelerate release cycles.
+# (Task):
+My objective was to implement a "Pipeline as Code" workflow using Jenkins to build Docker images, manage secure credentials, and orchestrate deployments onto a Kubernetes (Minikube) cluster. 
+# (Action): 
+I authored a Jenkinsfile to standardise the build-test-deploy stages. When faced with critical infrastructure "handshake" issues—including Docker Hub authentication resets and Kubernetes API redirection—I performed deep-dive troubleshooting. I resolved permission conflicts by engineering a "flattened" kubeconfig with embedded certificates and fixed service connectivity by synchronising container port mappings (3000 vs 8080).
+# (Result): 
+This resulted in a 100% build and deployment success rate by Build #14. I successfully delivered a resilient, automated pipeline that ensured consistent production environments and high application availability across multiple replicas.
+
+# BUSINESS IMPACT
+# 90%+ Reduction in Lead Time: 
+Shifting from manual steps to CI/CD reduces the time from code commit to production from hours to minutes.
+# Lower Change Failure Rate (CFR): 
+Automating the "handshake" between Docker and Kubernetes eliminates configuration drift, targeting a CFR of less than 15%.
+# Faster Mean Time to Recovery (MTTR): 
+Automated rollbacks and healthy pod replicas ensure service restoration occurs in seconds rather than minutes during a failure.
+# Increased Deployment Frequency:
+The business can now deploy multiple times per day with 100% build success, supporting agile market pivots.
